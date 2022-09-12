@@ -7,16 +7,19 @@ import (
 	"net/http"
 )
 
-type whatcomes struct {
-	Test string
-  aff string
+type mapEvent struct {
+  name string
+}
+
+type gameEvents struct {
+	Map mapEvent
 }
 
 func main() {
 	http.HandleFunc("/", gameEventsHandler)
 
-	fmt.Printf("Starting server at port 8080\n")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	fmt.Printf("Starting server at port 3000\n")
+	if err := http.ListenAndServe(":3000", nil); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -27,7 +30,8 @@ func gameEventsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a := whatcomes{}
+  fmt.Println("Chegou o request")
+	a := gameEvents{}
 
 	err := json.NewDecoder(r.Body).Decode(&a)
 	if err != nil {
@@ -35,8 +39,9 @@ func gameEventsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-  fmt.Println("Printandoooo", a.Test)
+  json.NewEncoder(os.Stdout).Encode(&m)
+  fmt.Println("Printandoooo", a.Map.name)
 	// Do something with the Person struct...
-	fmt.Fprintf(w, "Person: %+v", a)
+	fmt.Fprintf(w, "Game Event: %+v", a)
 
 }

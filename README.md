@@ -11,6 +11,11 @@ go build
 ## General
 V2 makes use of the dota GSI to receive direct calls with the currently game stats
 
+## Windows WSL
+You wont receive any notifications if running on windows WSL... because the 127.0.0.1 isnt mapped correct
+need to run
+netsh interface portproxy add v4tov6 listenaddress=127.0.0.1 listenport=3000 connectaddress=::1 connectport=3000
+
 ## DCA Audio
 Discord works better with the DCA format, you can create your own DCA audio by converting stardard formats with ffmpeg
 
