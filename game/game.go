@@ -8,11 +8,6 @@ import (
 	"github.com/jordhan-carvalho/belphegorv2/sound"
 )
 
-var stackGameTime = 48        // ingame time to stack
-var stackDelay = 60           // interval between stack
-var bountyRunesGameTime = 173 //180
-var bountyRunesDelay = 180
-var riverRunesGameTime = 110 // 120
 var gameTime = 0
 
 func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.VoiceConnection, gDone chan bool) {
@@ -22,17 +17,11 @@ func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.Voic
 		case <-gDone:
 			return
 		case event := <-gEventC:
-			// get the game time
 			gameTime = event.Map.ClockTime
 
-			if (gameTime-stackGameTime)%stackDelay == 0 {
-				go sound.PlaySpecificSound(vc, "stack.dca")
-			}
-
-			if (gameTime-bountyRunesGameTime)%bountyRunesDelay == 0 {
-				go sound.PlaySpecificSound(vc, "runa.dca")
-			}
-
+			checkBountyRunes(vc)
+			checkMidRunes(vc)
+			checkForStack(vc)
 			checkForSmokeInShop(vc)
 		}
 	}
@@ -43,7 +32,35 @@ func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.Voic
 func checkForSmokeInShop(vc *discordgo.VoiceConnection) {
 	smokeWarnTime := 410
 	smokeDelay := 420
+
 	if (gameTime-smokeWarnTime)%smokeDelay == 0 {
 		go sound.PlaySpecificSound(vc, "smoke.dca")
+	}
+}
+
+func checkForStack(vc *discordgo.VoiceConnection) {
+	stackGameTime := 48 // ingame time to stack
+	stackDelay := 60    // interval between stack
+
+	if (gameTime-stackGameTime)%stackDelay == 0 {
+		go sound.PlaySpecificSound(vc, "stack.dca")
+	}
+}
+
+func checkBountyRunes(vc *discordgo.VoiceConnection) {
+	bountyRunesGameTime := 173 //180
+	bountyRunesDelay := 180
+
+	if (gameTime-bountyRunesGameTime)%bountyRunesDelay == 0 {
+		go sound.PlaySpecificSound(vc, "bounty-rune.dca")
+	}
+}
+
+func checkMidRunes(vc *discordgo.VoiceConnection) {
+	midRunesGameTime := 110 // 120
+	midRunesDelay := 120
+
+	if (gameTime-midRunesGameTime)%midRunesDelay == 0 {
+		go sound.PlaySpecificSound(vc, "mid-rune.dca")
 	}
 }
