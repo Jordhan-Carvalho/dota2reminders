@@ -11,7 +11,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func PlaySpecificSound(vc *discordgo.VoiceConnection, audioBuffers [][]byte) {
+var soundsBuffers = make(map[string][][]byte)
+
+// func PlaySpecificSound(vc *discordgo.VoiceConnection, audioBuffers [][]byte) {
+func PlaySpecificSound(vc *discordgo.VoiceConnection, audioName string) {
+	audioBuffers := soundsBuffers[audioName]
 	// Sleep for a specified amount of time before playing the sound
 	time.Sleep(250 * time.Millisecond)
 
@@ -30,10 +34,7 @@ func PlaySpecificSound(vc *discordgo.VoiceConnection, audioBuffers [][]byte) {
 	time.Sleep(250 * time.Millisecond)
 }
 
-
 func LoadAllSounds() (map[string][][]byte, error) {
-	var soundsBuffers = make(map[string][][]byte)
-
 	items, _ := ioutil.ReadDir("./sounds_assets/")
 	fmt.Printf("Found %d sounds\n", len(items))
 

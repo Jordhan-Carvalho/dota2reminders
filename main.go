@@ -5,25 +5,20 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/jordhan-carvalho/belphegorv2/interfaces"
 	"github.com/jordhan-carvalho/belphegorv2/server"
 	"github.com/jordhan-carvalho/belphegorv2/sound"
-	"github.com/jordhan-carvalho/belphegorv2/interfaces"
 )
 
 var token string
-
-var stackTime = 48        // ingame time to stack
-var stackDelay = 60       // interval between stack
-var bountyRunesTime = 173 //180
-var bountyRunesDelay = 180
-var riverRunesTime = 110 // 120
-var gameTime = 0         // SHOULD BE A CHANNEL
-
 var gameEventsChannel = make(chan interfaces.GameEvents)
 var voiceStarted = false
-
+var port = ":3000"
 
 func init() {
 	// This will get the value passed to the program on the flag -t to the token variable
@@ -38,7 +33,7 @@ func main() {
 	}
 
 	// Load all sounds in memory
-	soundsBuffers, err := sound.LoadAllSounds()
+	_, err := sound.LoadAllSounds()
 	if err != nil {
 		fmt.Println("Error loading the sounds:", err)
 	}
@@ -58,31 +53,30 @@ func main() {
 		fmt.Println("error opening connection,", err)
 		return
 	}
-  // go carai(gameEventsChannel)
 
 	// pass a event and a function to handle the event https://discord.com/developers/docs/topics/gateway#event-names
-  messageCreate := &server.MessageCreateHandler{SoundsBuffers: soundsBuffers, VoiceStarted: &voiceStarted}
+	messageCreate := &server.MessageCreateHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted}
 	discord.AddHandler(messageCreate.Handler)
 
 	// webserver to handler GSI requests
-  gameEventsHanlder := &server.GameEventsHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted}
+	gameEventsHanlder := &server.GameEventsHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted}
 	http.HandleFunc("/", gameEventsHanlder.Handler)
 
-	fmt.Printf("Starting server at port 3000\n")
-	if err := http.ListenAndServe(":3000", nil); err != nil {
-		discord.Close()
-		log.Fatal(err)
-	}
+  fmt.Println("Starting http server at port:", port)
+  // This way we can clean the discord connection
+	go func() {
+		if err := http.ListenAndServe(port, nil); err != nil {
+			discord.Close()
+			log.Fatal(err)
+		}
+	}()
+	// Wait here until CTRL-C or other term signal is received.
+	fmt.Println("Bot is now running. Press CTRL-C to exit.")
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
+
+	// Cleanly close down the Discord session.
+	discord.Close()
+
 }
-
-
-
-func carai(c chan interfaces.GameEvents) {
-  for {
-    select {
-    case event := <-c:
-      fmt.Println(event)
-    }
-  }
-}
-

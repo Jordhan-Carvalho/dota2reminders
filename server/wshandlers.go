@@ -7,15 +7,17 @@ import (
 	"github.com/jordhan-carvalho/belphegorv2/game"
 	"github.com/jordhan-carvalho/belphegorv2/interfaces"
 	"github.com/jordhan-carvalho/belphegorv2/sound"
-	// "github.com/jordhan-carvalho/belphegorv2/utils"
+	"github.com/jordhan-carvalho/belphegorv2/utils"
 )
 
+var gameDone = make(chan bool)
 
 type MessageCreateHandler struct {
-	SoundsBuffers map[string][][]byte
-  VoiceStarted *bool
+	VoiceStarted   *bool
 	GameEventsChan chan interfaces.GameEvents
+	// Vc *discordgo.VoiceConnection
 }
+
 // This function will be called (due to AddHandler above) every time a new
 // message is created on any channel that the authenticated bot has access to.
 func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -38,13 +40,10 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 					return
 				}
 
-				sound.PlaySpecificSound(vc, h.SoundsBuffers["diego.dca"])
-        *h.VoiceStarted = true
-        go game.StartGame(h.GameEventsChan)
-				// go startGame(ticker, &gameTime, vc)
-				if err != nil {
-					fmt.Println("Error playing sound:", err)
-				}
+				sound.PlaySpecificSound(vc, "diego.dca")
+				*h.VoiceStarted = true
+
+				go game.StartListeningToGame(h.GameEventsChan, vc, gameDone)
 
 				return
 			}
@@ -52,9 +51,10 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 	}
 
 	if m.Content == "!time" {
-    // TODO
-		// message := utils.SecondsToMinutes(gameTime)
-    message := "BOLAO"
+		gameEvent := <-h.GameEventsChan
+		currentTime := gameEvent.Map.ClockTime
+		message := utils.SecondsToMinutes(currentTime)
+		fmt.Println("!time coming message", message)
 
 		_, err := s.ChannelMessageSend(m.ChannelID, message)
 		if err != nil {
@@ -74,7 +74,7 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 					return
 				}
 
-				go sound.PlaySpecificSound(vc, h.SoundsBuffers["rita.dca"])
+				go sound.PlaySpecificSound(vc, "rita.dca")
 			}
 		}
 	}
@@ -92,6 +92,7 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 				}
 
 				vc.Disconnect()
+				gameDone <- true
 				// gameTime = 0
 				fmt.Println("Game ended")
 			}
