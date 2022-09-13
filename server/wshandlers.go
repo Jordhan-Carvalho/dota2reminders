@@ -50,6 +50,32 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 		}
 	}
 
+  if m.Content == "!roshan" {
+    // If game is not in progress, do nothing
+    event := <- h.GameEventsChan
+    if event.Map.GameState != "DOTA_GAMERULES_STATE_GAME_IN_PROGRESS" {
+      return
+    } 
+
+		_, g, _ := getChannelAndGuild(s, m)
+		for _, vs := range g.VoiceStates {
+			if vs.UserID == m.Author.ID {
+				vc, err := s.ChannelVoiceJoin(g.ID, vs.ChannelID, false, true)
+				if err != nil {
+					fmt.Println("Error joining channel: ", err)
+					return
+				}
+
+        // TODO: be able to receive a different kill time
+        killedTime := event.Map.ClockTime
+				sound.PlaySpecificSound(vc, "roshan-start.dca")
+				go game.StartRoshanAndAegisTimers(h.GameEventsChan, killedTime ,vc )
+
+				return
+			}
+		}
+  }
+
 	if m.Content == "!time" {
 		gameEvent := <-h.GameEventsChan
 		currentTime := gameEvent.Map.ClockTime
@@ -64,7 +90,6 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 
 	if m.Content == "!rita" {
 		_, g, _ := getChannelAndGuild(s, m)
-
 		for _, vs := range g.VoiceStates {
 			if vs.UserID == m.Author.ID {
 				// Join the provided voice channel.
@@ -73,11 +98,27 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 					fmt.Println("Error joining channel: ", err)
 					return
 				}
-
 				go sound.PlaySpecificSound(vc, "rita.dca")
 			}
 		}
 	}
+
+	if m.Content == "!dieguin" {
+		_, g, _ := getChannelAndGuild(s, m)
+		for _, vs := range g.VoiceStates {
+			if vs.UserID == m.Author.ID {
+				// Join the provided voice channel.
+				vc, err := s.ChannelVoiceJoin(g.ID, vs.ChannelID, false, true)
+				if err != nil {
+					fmt.Println("Error joining channel: ", err)
+					return
+				}
+				go sound.PlaySpecificSound(vc, "diego-lol.dca")
+			}
+		}
+	}
+
+  // TODO: add more audio commands... its peruano:wr
 
 	if m.Content == "!quit" {
 		_, g, _ := getChannelAndGuild(s, m)

@@ -27,10 +27,49 @@ func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.Voic
 	}
 }
 
+func StartRoshanAndAegisTimers(gEventC chan interfaces.GameEvents, killedTime int, vc *discordgo.VoiceConnection) {
+	roshanMinSpawnWarningTime := 470
+	// roshanMinSpawnDelay := 480
+	roshanMaxSpawnWarningTime := 659
+	// roshanMaxSpawnDelay := 660
+	aegis2minWarnTime := 180
+	aegies30sWarnTime := 270
+	// aegisDelay = 300
+	fmt.Println("Roshan timer started")
+
+  myLoop:
+	for {
+		select {
+		case event := <-gEventC:
+			fmt.Println("ROSHAN FUNC IS RUNNNING")
+			gameTime = event.Map.ClockTime
+
+			if killedTime+aegis2minWarnTime == gameTime {
+				go sound.PlaySpecificSound(vc, "aegis-2min.dca")
+			}
+
+			if killedTime+aegies30sWarnTime == gameTime {
+				go sound.PlaySpecificSound(vc, "aegis-30s.dca")
+			}
+
+			if killedTime+roshanMinSpawnWarningTime == gameTime {
+				go sound.PlaySpecificSound(vc, "roshan-min.dca")
+			}
+
+			if killedTime+roshanMaxSpawnWarningTime == gameTime {
+				go sound.PlaySpecificSound(vc, "roshan-max.dca")
+				break myLoop
+			}
+		}
+	}
+	return
+
+}
+
 // smoke logic, will check if any on invertory if its any it will start a 7 min count
 // smoke at every 7 minutes... it starts at 2... max stack is 3... after 7 min you will have max stack
 func checkForSmokeInShop(vc *discordgo.VoiceConnection) {
-	smokeWarnTime := 410
+	smokeWarnTime := 415
 	smokeDelay := 420
 
 	if (gameTime-smokeWarnTime)%smokeDelay == 0 {
@@ -48,7 +87,7 @@ func checkForStack(vc *discordgo.VoiceConnection) {
 }
 
 func checkBountyRunes(vc *discordgo.VoiceConnection) {
-	bountyRunesGameTime := 173 //180
+	bountyRunesGameTime := 173
 	bountyRunesDelay := 180
 
 	if (gameTime-bountyRunesGameTime)%bountyRunesDelay == 0 {
@@ -57,10 +96,14 @@ func checkBountyRunes(vc *discordgo.VoiceConnection) {
 }
 
 func checkMidRunes(vc *discordgo.VoiceConnection) {
-	midRunesGameTime := 110 // 120
+	midRunesGameTime := 112
 	midRunesDelay := 120
 
 	if (gameTime-midRunesGameTime)%midRunesDelay == 0 {
 		go sound.PlaySpecificSound(vc, "mid-rune.dca")
 	}
 }
+
+// TODO ward_purchase_cooldown THIS COULD BE GOOD
+
+// TODO tower in deny range
