@@ -18,6 +18,7 @@ func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.Voic
 		case <-gDone:
 			return
 		case event := <-gEventC:
+			// TODO Add a salute at the game start to know that the bot is working
 			// since the throttle on the post request is 1, we get the same ClockTime sometimes
 			fmt.Println("Inside event receiver on StartListeningToGame")
 			if gameTime != event.Map.ClockTime && event.Map.GameState == "DOTA_GAMERULES_STATE_GAME_IN_PROGRESS" {
@@ -117,10 +118,10 @@ func checkMidRunes(vc *discordgo.VoiceConnection) {
 }
 
 func checkForWards(vc *discordgo.VoiceConnection, wardCd int, buyWardsLastCall *int) {
-  timeBetweenCalls := 30
+	timeBetweenCalls := 30
 	if wardCd == 0 && (*buyWardsLastCall+timeBetweenCalls) <= gameTime {
 		go sound.PlaySpecificSound(vc, "wards.dca")
-    *buyWardsLastCall = gameTime
+		*buyWardsLastCall = gameTime
 	}
 }
 

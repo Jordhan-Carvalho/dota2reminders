@@ -52,7 +52,7 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 		}
 	}
 
-	// TODO Fix it... it laggs the timer
+	// TODO BROKEN Fix it... it laggs the timer
 	if m.Content == "!roshan" {
 		// If game is not in progress, do nothing
 		event := <-h.GameEventsChan
