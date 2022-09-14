@@ -68,7 +68,7 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 
         // TODO: be able to receive a different kill time
         killedTime := event.Map.ClockTime
-				sound.PlaySpecificSound(vc, "roshan-start.dca")
+				go sound.PlaySpecificSound(vc, "roshan-start.dca")
 				go game.StartRoshanAndAegisTimers(h.GameEventsChan, killedTime ,vc )
 
 				return

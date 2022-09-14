@@ -10,6 +10,11 @@ import (
 
 var gameTime = 0
 
+// WOULD THAT WORK???????? ROSHAN FUNC IS LAGGING THE TIMER
+func GetGameTime() int {
+  return gameTime
+}
+
 func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.VoiceConnection, gDone chan bool) {
 	fmt.Println("Listening to the game input")
 	for {
@@ -18,6 +23,8 @@ func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.Voic
 			return
 		case event := <-gEventC:
 			gameTime = event.Map.ClockTime
+    fmt.Println("Game clockTime", event.Map.ClockTime)
+    fmt.Println("Game ward cooldown", event.Map.WardPurchaseCooldown)
 
 			checkBountyRunes(vc)
 			checkMidRunes(vc)
@@ -34,7 +41,7 @@ func StartRoshanAndAegisTimers(gEventC chan interfaces.GameEvents, killedTime in
 	// roshanMaxSpawnDelay := 660
 	aegis2minWarnTime := 180
 	aegies30sWarnTime := 270
-	// aegisDelay = 300
+  // aegisDelay := 300
 	fmt.Println("Roshan timer started")
 
   myLoop:
