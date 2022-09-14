@@ -10,11 +10,6 @@ import (
 
 var gameTime = 0
 
-// WOULD THAT WORK???????? ROSHAN FUNC IS LAGGING THE TIMER
-func GetGameTime() int {
-  return gameTime
-}
-
 func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.VoiceConnection, gDone chan bool) {
 	fmt.Println("Listening to the game input")
 	for {
@@ -22,6 +17,8 @@ func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.Voic
 		case <-gDone:
 			return
 		case event := <-gEventC:
+    // since the throttle on the post request is 1, we get the same ClockTime sometimes
+    if gameTime != event.Map.ClockTime && event.Map.GameState == "DOTA_GAMERULES_STATE_GAME_IN_PROGRESS" {
 			gameTime = event.Map.ClockTime
     fmt.Println("Game clockTime", event.Map.ClockTime)
     fmt.Println("Game ward cooldown", event.Map.WardPurchaseCooldown)
@@ -30,6 +27,8 @@ func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.Voic
 			checkMidRunes(vc)
 			checkForStack(vc)
 			checkForSmokeInShop(vc)
+
+    }
 		}
 	}
 }
