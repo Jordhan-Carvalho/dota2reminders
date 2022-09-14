@@ -17,6 +17,7 @@ import (
 
 var token string
 var gameEventsChannel = make(chan interfaces.GameEvents)
+var gameEventsReceivers = 1
 var voiceStarted = false
 var port = ":3000"
 
@@ -55,11 +56,11 @@ func main() {
 	}
 
 	// pass a event and a function to handle the event https://discord.com/developers/docs/topics/gateway#event-names
-	messageCreate := &server.MessageCreateHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted}
+  messageCreate := &server.MessageCreateHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted, GameEventsReceivers: &gameEventsReceivers}
 	discord.AddHandler(messageCreate.Handler)
 
 	// webserver to handler GSI requests
-	gameEventsHanlder := &server.GameEventsHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted}
+	gameEventsHanlder := &server.GameEventsHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted, GameEventsReceivers: &gameEventsReceivers}
 	http.HandleFunc("/", gameEventsHanlder.Handler)
 
   fmt.Println("Starting http server at port:", port)

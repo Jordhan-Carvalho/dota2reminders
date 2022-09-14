@@ -11,10 +11,12 @@ import (
 )
 
 var gameDone = make(chan bool)
+var isRoshanTimerRunning = false
 
 type MessageCreateHandler struct {
-	VoiceStarted   *bool
-	GameEventsChan chan interfaces.GameEvents
+	VoiceStarted        *bool
+	GameEventsChan      chan interfaces.GameEvents
+	GameEventsReceivers *int
 	// Vc *discordgo.VoiceConnection
 }
 
@@ -50,12 +52,16 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 		}
 	}
 
-  if m.Content == "!roshan" {
-    // If game is not in progress, do nothing
-    event := <- h.GameEventsChan
-    if event.Map.GameState != "DOTA_GAMERULES_STATE_GAME_IN_PROGRESS" {
-      return
-    } 
+	// TODO Fix it... it laggs the timer
+	if m.Content == "!roshan" {
+		// If game is not in progress, do nothing
+		event := <-h.GameEventsChan
+		fmt.Println("Should be called once")
+		// TODO should also check if theres a roshan timer going
+		if event.Map.GameState != "DOTA_GAMERULES_STATE_GAME_IN_PROGRESS" || isRoshanTimerRunning {
+      fmt.Println("Game not in progress or the time is already running")
+			return
+		}
 
 		_, g, _ := getChannelAndGuild(s, m)
 		for _, vs := range g.VoiceStates {
@@ -66,15 +72,18 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 					return
 				}
 
-        // TODO: be able to receive a different kill time
-        killedTime := event.Map.ClockTime
+				// TODO: be able to receive a different kill time
+				killedTime := event.Map.ClockTime
 				go sound.PlaySpecificSound(vc, "roshan-start.dca")
-				go game.StartRoshanAndAegisTimers(h.GameEventsChan, killedTime ,vc )
+				// TODO best place to increment the receiver?
+				*h.GameEventsReceivers++
+				isRoshanTimerRunning = true
+				go game.StartRoshanAndAegisTimers(h.GameEventsChan, killedTime, vc, &isRoshanTimerRunning, h.GameEventsReceivers)
 
 				return
 			}
 		}
-  }
+	}
 
 	if m.Content == "!time" {
 		gameEvent := <-h.GameEventsChan
@@ -118,7 +127,7 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 		}
 	}
 
-  // TODO: add more audio commands... its peruano:wr
+	// TODO: add more audio commands... its peruano:wr
 
 	if m.Content == "!quit" {
 		_, g, _ := getChannelAndGuild(s, m)

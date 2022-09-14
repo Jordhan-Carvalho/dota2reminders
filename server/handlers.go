@@ -11,9 +11,9 @@ import (
 type GameEventsHandler struct {
 	GameEventsChan chan interfaces.GameEvents
 	VoiceStarted   *bool
-  // entirePayload interface{}
+  GameEventsReceivers *int
+	// entirePayload interface{}
 }
-
 
 func (g *GameEventsHandler) Handler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
@@ -23,7 +23,7 @@ func (g *GameEventsHandler) Handler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Chegou o request")
 	gameEvent := interfaces.GameEvents{}
-  // logEntirePayload := g.entirePayload 
+	// logEntirePayload := g.entirePayload
 
 	err := json.NewDecoder(r.Body).Decode(&gameEvent)
 	if err != nil {
@@ -32,8 +32,11 @@ func (g *GameEventsHandler) Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if *g.VoiceStarted {
-    fmt.Println("Started to send request to channel")
-		g.GameEventsChan <- gameEvent
+		// If we dont specify the receiver count the channel will be amepty after the fist consume
+    fmt.Println("handlers.go, sending the gameEvent to channel, receivers:", *g.GameEventsReceivers)
+		for i := 0; i < *g.GameEventsReceivers; i++ {
+			g.GameEventsChan <- gameEvent
+		}
 	}
 
 	fmt.Fprintf(w, "Game Event: %+v", gameEvent)
