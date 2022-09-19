@@ -15,6 +15,7 @@ type GameEventsHandler struct {
 	// entirePayload interface{}
 }
 
+
 func (g *GameEventsHandler) Handler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Method is not supported.", http.StatusNotFound)

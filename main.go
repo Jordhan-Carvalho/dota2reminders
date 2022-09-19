@@ -12,18 +12,25 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/jordhan-carvalho/belphegorv2/interfaces"
 	"github.com/jordhan-carvalho/belphegorv2/server"
+	"github.com/jordhan-carvalho/belphegorv2/slash_commands"
 	"github.com/jordhan-carvalho/belphegorv2/sound"
 )
 
-var token string
-var gameEventsChannel = make(chan interfaces.GameEvents)
-var gameEventsReceivers = 1
-var voiceStarted = false
-var port = ":3000"
+var (
+	token               string
+	gameEventsChannel   = make(chan interfaces.GameEvents)
+	gameEventsReceivers = 1
+	voiceStarted        = false
+	port                = ":3000"
+	GuildID             string
+	RemoveCommands      bool
+)
+
 
 func init() {
-	// This will get the value passed to the program on the flag -t to the token variable
 	flag.StringVar(&token, "t", "", "Bot Token")
+	flag.StringVar(&GuildID, "guild", "", "Test guild ID, Of not passed - bot registers commands globally")
+	flag.BoolVar(&RemoveCommands, "rmcmd", true, "Remove all commands after shutdowning or not")
 	flag.Parse()
 }
 
@@ -34,6 +41,7 @@ func main() {
 	}
 
 	// Load all sounds in memory
+	log.Println("Loading all sounds...")
 	_, err := sound.LoadAllSounds()
 	if err != nil {
 		fmt.Println("Error loading the sounds:", err)
@@ -55,29 +63,54 @@ func main() {
 		return
 	}
 
+	log.Println("Adding commands...")
+	slashCommandsHandler := &slash_commands.SlashCommandsHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted}
+	discord.AddHandler(slashCommandsHandler.Handler)
+	// it will create a map with the size of the number of commands
+	registeredCommands := make([]*discordgo.ApplicationCommand, len(slash_commands.Commands))
+	for i, v := range slash_commands.Commands {
+		cmd, err := discord.ApplicationCommandCreate(discord.State.User.ID, GuildID, v)
+		if err != nil {
+			log.Panicf("Cannot create '%v' command: %v", v.Name, err)
+		}
+		registeredCommands[i] = cmd
+	}
+
+	/* // DEPRECATED: In favor of slash commands
 	// pass a event and a function to handle the event https://discord.com/developers/docs/topics/gateway#event-names
-  messageCreate := &server.MessageCreateHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted, GameEventsReceivers: &gameEventsReceivers}
-	discord.AddHandler(messageCreate.Handler)
+	messageCreate := &server.MessageCreateHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted, GameEventsReceivers: &gameEventsReceivers}
+	discord.AddHandler(messageCreate.Handler) */
 
 	// webserver to handler GSI requests
 	gameEventsHanlder := &server.GameEventsHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted, GameEventsReceivers: &gameEventsReceivers}
 	http.HandleFunc("/", gameEventsHanlder.Handler)
 
-  fmt.Println("Starting http server at port:", port)
-  // This way we can clean the discord connection
+	log.Println("Starting http server at port", port)
+	// This way we can clean the discord connection
 	go func() {
 		if err := http.ListenAndServe(port, nil); err != nil {
-			discord.Close()
 			log.Fatal(err)
 		}
 	}()
+
 	// Wait here until CTRL-C or other term signal is received.
-	fmt.Println("Bot is now running. Press CTRL-C to exit.")
+	log.Println("Bot is now running. Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
 
-	// Cleanly close down the Discord session.
+	log.Println("Gracefully shutting down.")
+
+	if RemoveCommands {
+		log.Println("Removing commands...")
+		for _, v := range registeredCommands {
+			err := discord.ApplicationCommandDelete(discord.State.User.ID, GuildID, v.ID)
+			if err != nil {
+				log.Panicf("Cannot delete '%v' command: %v", v.Name, err)
+			}
+		}
+	}
+
 	discord.Close()
 
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"time"
 
@@ -13,7 +14,6 @@ import (
 
 var soundsBuffers = make(map[string][][]byte)
 
-// func PlaySpecificSound(vc *discordgo.VoiceConnection, audioBuffers [][]byte) {
 func PlaySpecificSound(vc *discordgo.VoiceConnection, audioName string) {
 	audioBuffers := soundsBuffers[audioName]
 	// Sleep for a specified amount of time before playing the sound
@@ -36,7 +36,7 @@ func PlaySpecificSound(vc *discordgo.VoiceConnection, audioName string) {
 
 func LoadAllSounds() (map[string][][]byte, error) {
 	items, _ := ioutil.ReadDir("./sounds_assets/")
-	fmt.Printf("Found %d sounds\n", len(items))
+	log.Printf("Found %d sounds\n", len(items))
 
 	for _, soundItem := range items {
 		soundsBuffers[soundItem.Name()] = make([][]byte, 0)

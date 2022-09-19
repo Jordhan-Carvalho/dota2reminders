@@ -10,6 +10,9 @@ import (
 	"github.com/jordhan-carvalho/belphegorv2/utils"
 )
 
+ /* ** DEPRECATED: WS HANDLERS GONE TO SLASH COMMANDS **  */
+
+
 var gameDone = make(chan bool)
 var isRoshanTimerRunning = false
 
@@ -122,12 +125,10 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 					fmt.Println("Error joining channel: ", err)
 					return
 				}
-				go sound.PlaySpecificSound(vc, "diego-lol.dca")
+				sound.PlaySpecificSound(vc, "diego-lol.dca")
 			}
 		}
 	}
-
-	// TODO: add more audio commands... its peruano:wr
 
 	if m.Content == "!quit" {
 		_, g, _ := getChannelAndGuild(s, m)

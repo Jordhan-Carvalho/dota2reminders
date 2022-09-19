@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/jordhan-carvalho/belphegorv2/interfaces"
@@ -11,7 +12,7 @@ import (
 var gameTime = 0
 
 func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.VoiceConnection, gDone chan bool) {
-	fmt.Println("Start Listening to the game input")
+	log.Println("Start Listening to the game input")
 	buyWardsLastCall := 0
 	for {
 		select {
@@ -86,7 +87,7 @@ func checkForSmokeInShop(vc *discordgo.VoiceConnection) {
 	smokeDelay := 420
 
 	if (gameTime-smokeWarnTime)%smokeDelay == 0 {
-		go sound.PlaySpecificSound(vc, "smoke.dca")
+		sound.PlaySpecificSound(vc, "smoke.dca")
 	}
 }
 
@@ -95,7 +96,7 @@ func checkForStack(vc *discordgo.VoiceConnection) {
 	stackDelay := 60    // interval between stack
 
 	if (gameTime-stackGameTime)%stackDelay == 0 {
-		go sound.PlaySpecificSound(vc, "stack.dca")
+		sound.PlaySpecificSound(vc, "stack.dca")
 	}
 }
 
@@ -104,7 +105,7 @@ func checkBountyRunes(vc *discordgo.VoiceConnection) {
 	bountyRunesDelay := 180
 
 	if (gameTime-bountyRunesGameTime)%bountyRunesDelay == 0 {
-		go sound.PlaySpecificSound(vc, "bounty-rune.dca")
+		sound.PlaySpecificSound(vc, "bounty-rune.dca")
 	}
 }
 
@@ -113,14 +114,14 @@ func checkMidRunes(vc *discordgo.VoiceConnection) {
 	midRunesDelay := 120
 
 	if (gameTime-midRunesGameTime)%midRunesDelay == 0 {
-		go sound.PlaySpecificSound(vc, "mid-rune.dca")
+		sound.PlaySpecificSound(vc, "mid-rune.dca")
 	}
 }
 
 func checkForWards(vc *discordgo.VoiceConnection, wardCd int, buyWardsLastCall *int) {
 	timeBetweenCalls := 30
 	if wardCd == 0 && (*buyWardsLastCall+timeBetweenCalls) <= gameTime {
-		go sound.PlaySpecificSound(vc, "wards.dca")
+		sound.PlaySpecificSound(vc, "wards.dca")
 		*buyWardsLastCall = gameTime
 	}
 }
