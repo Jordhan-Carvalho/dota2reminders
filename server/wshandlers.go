@@ -48,7 +48,8 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 				sound.PlaySpecificSound(vc, "diego.dca")
 				*h.VoiceStarted = true
 
-				go game.StartListeningToGame(h.GameEventsChan, vc, gameDone)
+        /* DEPRECATED
+				go game.StartListeningToGame(h.GameEventsChan, vc, gameDone) */
 
 				return
 			}

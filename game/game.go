@@ -11,7 +11,7 @@ import (
 
 var gameTime = 0
 
-func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.VoiceConnection, gDone chan bool) {
+func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.VoiceConnection, gDone chan bool, activeAlerts interfaces.ActiveAlerts) {
 	log.Println("Start Listening to the game input")
 	buyWardsLastCall := 0
 	for {
@@ -28,11 +28,21 @@ func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.Voic
 				fmt.Println("Game clockTime", event.Map.ClockTime)
 				fmt.Println("Game ward cooldown", event.Map.WardPurchaseCooldown)
 
-				checkBountyRunes(vc)
-				checkMidRunes(vc)
-				checkForStack(vc)
-				checkForSmokeInShop(vc)
-				checkForWards(vc, wardsPurchaseCd, &buyWardsLastCall)
+				if activeAlerts.BountyRune {
+					checkBountyRunes(vc)
+				}
+				if activeAlerts.MidRune {
+					checkMidRunes(vc)
+				}
+				if activeAlerts.Stack {
+					checkForStack(vc)
+				}
+				if activeAlerts.Smoke {
+					checkForSmokeInShop(vc)
+				}
+				if activeAlerts.Ward {
+					checkForWards(vc, wardsPurchaseCd, &buyWardsLastCall)
+				}
 			}
 		}
 	}

@@ -47,3 +47,11 @@ type mapEvent struct {
 type GameEvents struct {
 	Map mapEvent `json:"map"`
 }
+
+type ActiveAlerts struct {
+  Stack bool
+  Smoke bool
+  Ward bool
+  BountyRune bool
+  MidRune bool
+}
