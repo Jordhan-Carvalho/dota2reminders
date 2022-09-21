@@ -20,7 +20,7 @@ WORKDIR /
 COPY --from=build /belphegorv2-build /belphegorv2-build
 
 EXPOSE 8080
-COPY Dockerfile .en[v] ./
+COPY docker-compose.yml .en[v] ./
 COPY ./sounds_assets/ ./sounds_assets/
 
 USER nonroot:nonroot

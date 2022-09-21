@@ -27,3 +27,13 @@ jobs:
         with:
           push: true
           tags: jordhancarvalho/belphegor:latest
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_HOST_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            whoami
+            ls -al
+            export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
