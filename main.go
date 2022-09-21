@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/joho/godotenv"
 	"github.com/jordhan-carvalho/belphegorv2/interfaces"
 	"github.com/jordhan-carvalho/belphegorv2/server"
 	"github.com/jordhan-carvalho/belphegorv2/slash_commands"
@@ -26,8 +27,8 @@ var (
 	RemoveCommands      bool
 )
 
-
 func init() {
+	initDotEnv()
 	flag.StringVar(&token, "t", "", "Bot Token")
 	flag.StringVar(&GuildID, "guild", "", "Test guild ID, Of not passed - bot registers commands globally")
 	flag.BoolVar(&RemoveCommands, "rmcmd", true, "Remove all commands after shutdowning or not")
@@ -36,8 +37,11 @@ func init() {
 
 func main() {
 	if token == "" {
-		fmt.Printf("You need to pass the token, please run ./belphegor -t <token value>")
-		return
+    token = os.Getenv("BOT_TOKEN")
+		if token == "" {
+			fmt.Printf("You need to pass the token, please run ./belphegor -t <token value> or pass the token through the BOT_TOKEN env var")
+			return
+		}
 	}
 
 	// Load all sounds in memory
@@ -113,4 +117,12 @@ func main() {
 
 	discord.Close()
 
+}
+
+func initDotEnv() {
+	log.Println("Initializing dot env")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 }

@@ -56,6 +56,12 @@ var (
 			Description: "Boolean option",
 			Required:    true,
 		},
+		{
+			Type:        discordgo.ApplicationCommandOptionBoolean,
+			Name:        "neutral-items",
+			Description: "Boolean option",
+			Required:    true,
+		},
 	}
 
 	// https://discord.com/developers/docs/interactions/application-commands
@@ -271,9 +277,12 @@ func (h *SlashCommandsHandler) Handler(s *discordgo.Session, i *discordgo.Intera
 				),
 			},
 		})
+
+		time.Sleep(time.Second * 5)
+		s.InteractionResponseDelete(i.Interaction)
 	}
 
-  if commandName == "alerts" {
+	if commandName == "alerts" {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
@@ -283,7 +292,7 @@ func (h *SlashCommandsHandler) Handler(s *discordgo.Session, i *discordgo.Intera
 
 		time.Sleep(time.Second * 10)
 		s.InteractionResponseDelete(i.Interaction)
-  }
+	}
 }
 
 func formatOptionsMessage(optionsMap map[string]*discordgo.ApplicationCommandInteractionDataOption) (margs []interface{}, msgformat string) {

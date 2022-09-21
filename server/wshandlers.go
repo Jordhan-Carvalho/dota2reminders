@@ -93,7 +93,6 @@ func (h *MessageCreateHandler) Handler(s *discordgo.Session, m *discordgo.Messag
 		gameEvent := <-h.GameEventsChan
 		currentTime := gameEvent.Map.ClockTime
 		message := utils.SecondsToMinutes(currentTime)
-		fmt.Println("!time coming message", message)
 
 		_, err := s.ChannelMessageSend(m.ChannelID, message)
 		if err != nil {

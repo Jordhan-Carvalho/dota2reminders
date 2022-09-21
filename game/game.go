@@ -19,15 +19,14 @@ func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.Voic
 		case <-gDone:
 			return
 		case event := <-gEventC:
-			// TODO Add a salute at the game start to know that the bot is working
 			// since the throttle on the post request is 1, we get the same ClockTime sometimes
-			fmt.Println("Inside event receiver on StartListeningToGame")
 			if gameTime != event.Map.ClockTime && event.Map.GameState == "DOTA_GAMERULES_STATE_GAME_IN_PROGRESS" {
 				gameTime = event.Map.ClockTime
 				wardsPurchaseCd := event.Map.WardPurchaseCooldown
-				fmt.Println("Game clockTime", event.Map.ClockTime)
-				fmt.Println("Game ward cooldown", event.Map.WardPurchaseCooldown)
 
+				if activeAlerts.NeutralItems {
+					checkNeutralItems(vc)
+				}
 				if activeAlerts.BountyRune {
 					checkBountyRunes(vc)
 				}
@@ -48,6 +47,7 @@ func StartListeningToGame(gEventC chan interfaces.GameEvents, vc *discordgo.Voic
 	}
 }
 
+// TODO: NOT READY TO USE... NEED WORK
 func StartRoshanAndAegisTimers(gEventC chan interfaces.GameEvents, killedTime int, vc *discordgo.VoiceConnection, isTimeRunning *bool, eventReceivers *int) {
 	roshanMinSpawnWarningTime := 470
 	// roshanMinSpawnDelay := 480
@@ -78,7 +78,7 @@ myLoop:
 			}
 
 			if killedTime+roshanMaxSpawnWarningTime <= gameTime {
-				fmt.Println("Entrou killedtime, roshanMax, gametime", killedTime, roshanMaxSpawnWarningTime, gameTime)
+				fmt.Println("killedtime, roshanMax, gametime", killedTime, roshanMaxSpawnWarningTime, gameTime)
 				go sound.PlaySpecificSound(vc, "roshan-max.dca")
 				*eventReceivers--
 				*isTimeRunning = false
@@ -133,6 +133,22 @@ func checkForWards(vc *discordgo.VoiceConnection, wardCd int, buyWardsLastCall *
 	if wardCd == 0 && (*buyWardsLastCall+timeBetweenCalls) <= gameTime {
 		sound.PlaySpecificSound(vc, "wards.dca")
 		*buyWardsLastCall = gameTime
+	}
+}
+
+func checkNeutralItems(vc *discordgo.VoiceConnection) {
+	neutralItemsTime := map[string]int{
+		"neutral-tier1": 420,
+		"neutral-tier2": 1020,
+		"neutral-tier3": 1620,
+		"neutral-tier4": 2200,
+		"neutral-tier5": 3600,
+	}
+
+	for k, v := range neutralItemsTime {
+		if gameTime == v {
+			sound.PlaySpecificSound(vc, k+".dca")
+		}
 	}
 }
 

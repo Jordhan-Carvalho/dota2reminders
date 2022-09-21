@@ -54,4 +54,5 @@ type ActiveAlerts struct {
   Ward bool
   BountyRune bool
   MidRune bool
+  NeutralItems bool
 }

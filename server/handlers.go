@@ -22,7 +22,6 @@ func (g *GameEventsHandler) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Chegou o request")
 	gameEvent := interfaces.GameEvents{}
 	// logEntirePayload := g.entirePayload
 
@@ -33,7 +32,7 @@ func (g *GameEventsHandler) Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if *g.VoiceStarted {
-		// If we dont specify the receiver count the channel will be amepty after the fist consume
+		// If we dont specify the receiver count the channel will be empty after the fist consume
     fmt.Println("handlers.go, sending the gameEvent to channel, receivers:", *g.GameEventsReceivers)
 		for i := 0; i < *g.GameEventsReceivers; i++ {
 			g.GameEventsChan <- gameEvent

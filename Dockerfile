@@ -21,6 +21,7 @@ COPY --from=build /belphegorv2-build /belphegorv2-build
 
 EXPOSE 8080
 COPY .env ./
+COPY ./sounds_assets ./sounds_assets/
 
 USER nonroot:nonroot
 
