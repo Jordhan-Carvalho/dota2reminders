@@ -27,13 +27,14 @@ jobs:
         with:
           push: true
           tags: jordhancarvalho/belphegor:latest
-      - name: executing remote ssh commands using password
+      - 
+        name: Executing ssh commands on oracle VM
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.ORACLE_HOST }}
           username: ${{ secrets.ORACLE_HOST_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            whoami
-            ls -al
             export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+            docker-compose pull
+            docker-compose up -d
