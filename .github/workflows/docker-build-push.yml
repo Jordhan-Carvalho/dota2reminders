@@ -34,7 +34,6 @@ jobs:
           host: ${{ secrets.ORACLE_HOST }}
           username: ${{ secrets.ORACLE_HOST_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          script: |
-            export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-            docker-compose pull
-            docker-compose up -d
+          script: docker-compose pull && docker-compose up -d
+            # docker-compose pull
+            # docker-compose up -d
