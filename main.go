@@ -39,7 +39,7 @@ func main() {
 	if token == "" {
     token = os.Getenv("BOT_TOKEN")
 		if token == "" {
-			fmt.Printf("You need to pass the token, please run ./belphegor -t <token value> or pass the token through the BOT_TOKEN env var")
+			fmt.Printf("You need to pass the token, please run ./belphegor -t <token value> or pass the token through the BOT_TOKEN env var \n")
 			return
 		}
 	}
@@ -123,6 +123,6 @@ func initDotEnv() {
 	log.Println("Initializing dot env")
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Error loading .env file or no .env file found")
 	}
 }
