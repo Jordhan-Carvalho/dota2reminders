@@ -87,7 +87,7 @@ func main() {
 
 	// webserver to handler GSI requests
 	gameEventsHanlder := &server.GameEventsHandler{GameEventsChan: gameEventsChannel, VoiceStarted: &voiceStarted, GameEventsReceivers: &gameEventsReceivers}
-	http.HandleFunc("/", gameEventsHanlder.Handler)
+	http.HandleFunc("/", gameEventsHanlder.Handle)
 
 	log.Println("Starting http server at port", port)
 	// This way we can clean the discord connection
