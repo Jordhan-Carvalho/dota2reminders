@@ -57,7 +57,7 @@ type IPStatus struct {
 	LastReqTime  int64  `json:"lastReqTime"`
 }
 
-func writteIPPersistence(userIP string) {
+func writeIPPersistence(userIP string) {
 	now := time.Now().Unix()
 
 	ipStatus := &IPStatus{
@@ -92,16 +92,16 @@ func getIPPersistence() IPStatus {
 func shouldListenToRequest(userIP string, ps IPStatus) bool {
 	now := time.Now().Unix()
 	secondsToInvalidateGame := 180
-	secondsToRewritte := 30
+	secondsToRewrite := 30
 
 	if userIP == ps.LastActiveIp {
-		if now >= (ps.LastReqTime + int64(secondsToRewritte)) {
-			writteIPPersistence(userIP)
+		if now >= (ps.LastReqTime + int64(secondsToRewrite)) {
+			writeIPPersistence(userIP)
 		}
 		return true
 	} else {
 		if now > ps.LastReqTime+int64(secondsToInvalidateGame) {
-			writteIPPersistence(userIP)
+			writeIPPersistence(userIP)
 			return true
 		}
 	}
