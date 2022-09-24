@@ -11,6 +11,7 @@ COPY ./ ./
 RUN go mod tidy
 
 RUN go build -o /belphegorv2-build
+RUN chmod 777 /app/ippersistence.json
 
 ## Deploy (Reduced to 20mb or so)
 FROM gcr.io/distroless/base-debian10
@@ -18,9 +19,10 @@ FROM gcr.io/distroless/base-debian10
 WORKDIR /
 
 COPY --from=build /belphegorv2-build /belphegorv2-build
+COPY --from=build /app/ippersistence.json /
 
 EXPOSE 8080
-COPY ippersistence.json .en[v] ./
+COPY ./docker-compose.yml .en[v] ./
 COPY ./sounds_assets/ ./sounds_assets/
 
 USER nonroot:nonroot

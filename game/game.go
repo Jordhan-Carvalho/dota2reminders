@@ -120,7 +120,7 @@ func checkBountyRunes(vc *discordgo.VoiceConnection) {
 }
 
 func checkMidRunes(vc *discordgo.VoiceConnection) {
-	midRunesGameTime := 112
+	midRunesGameTime := 113
 	midRunesDelay := 120
 
 	if (gameTime-midRunesGameTime)%midRunesDelay == 0 {
@@ -129,7 +129,7 @@ func checkMidRunes(vc *discordgo.VoiceConnection) {
 }
 
 func checkForWards(vc *discordgo.VoiceConnection, wardCd int, buyWardsLastCall *int) {
-	timeBetweenCalls := 30
+	timeBetweenCalls := 40
 	if wardCd == 0 && (*buyWardsLastCall+timeBetweenCalls) <= gameTime {
 		sound.PlaySpecificSound(vc, "wards.dca")
 		*buyWardsLastCall = gameTime
