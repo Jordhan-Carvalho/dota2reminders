@@ -43,7 +43,6 @@ func (g *GameEventsHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	if *g.VoiceStarted {
 		// If we dont specify the receiver count the channel will be empty after the fist consume
-		fmt.Println("handlers.go, sending the gameEvent to channel, receivers:", *g.GameEventsReceivers)
 		for i := 0; i < *g.GameEventsReceivers; i++ {
 			g.GameEventsChan <- gameEvent
 		}

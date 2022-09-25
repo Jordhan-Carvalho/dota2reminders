@@ -17,7 +17,7 @@ Why I cant simple add the bot to my server? I dont want to deal with server cost
 
 - Automaticly listen to your game status
 - You can choose a range of different reminders (stack time, neutral items, smoke, wards,)
-  - stack (every xx:xx:48)
+  - stack (every xx:xx:44)
   - wards (everytime it is available in the shop with a delay of 40 seconds to avoid spam)
   - smoke (1 stock takes 7 minutes to replenish, so thats the reminder time)
   - bounty runes (7 seconds before spawn)

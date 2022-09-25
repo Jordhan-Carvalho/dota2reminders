@@ -102,7 +102,7 @@ func checkForSmokeInShop(vc *discordgo.VoiceConnection) {
 }
 
 func checkForStack(vc *discordgo.VoiceConnection) {
-	stackGameTime := 48 // ingame time to stack
+	stackGameTime := 44 // ingame time to stack
 	stackDelay := 60    // interval between stack
 
 	if (gameTime-stackGameTime)%stackDelay == 0 {

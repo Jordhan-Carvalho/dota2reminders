@@ -127,6 +127,7 @@ func (h *SlashCommandsHandler) Handler(s *discordgo.Session, i *discordgo.Intera
 		activeAlerts.Ward = optionMap["ward"].BoolValue()
 		activeAlerts.BountyRune = optionMap["bounty-rune"].BoolValue()
 		activeAlerts.MidRune = optionMap["mid-rune"].BoolValue()
+		activeAlerts.NeutralItems = optionMap["neutral-items"].BoolValue()
 
 		g, err := s.State.Guild(i.GuildID)
 		if err != nil {
@@ -246,6 +247,7 @@ func (h *SlashCommandsHandler) Handler(s *discordgo.Session, i *discordgo.Intera
 		activeAlerts.Ward = optionMap["ward"].BoolValue()
 		activeAlerts.BountyRune = optionMap["bounty-rune"].BoolValue()
 		activeAlerts.MidRune = optionMap["mid-rune"].BoolValue()
+		activeAlerts.NeutralItems = optionMap["neutral-items"].BoolValue()
 
 		// start a new one passing the options value
 		g, err := s.State.Guild(i.GuildID)
