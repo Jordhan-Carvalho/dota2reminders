@@ -27,6 +27,16 @@ Why I cant simple add the bot to my server? I dont want to deal with server cost
 - Drag and drop markdown and HTML files into Dillinger
 
 ## How to use
+
+You need to enable the gamestate integration so the game can send the events to your server/program
+https://support.overwolf.com/en/support/solutions/articles/9000212745-how-to-enable-game-state-integration-for-dota-2
+Then copy the gamestate_integration_belphegor.cfg file to your dota cfg folder....
+If you never used overwolf you probably does not have the gamestate_integration folder, in that case just manually create it
+IMAGE
+Then you gotta pass you bot token to the env file, you can open it with nodetepad or any other text editor
+Then you just run the server/program
+
+
 So theres X ways to run the bot... in all of them you will need to create your own bot... Its a one time thing only
 1 -Since the nature os this bot is to listen to your games (or any friend in your server) you will need to create your own bot account on discord
 Theres a step by step guide where your first creat an application then configure your bot, add the scopes and permissions, and install the app in your server... REMEMBER TO SAVE THE TOKEN SOMEWHERE SAFE, IT IS USED AS A BRIDGE TO YOUR SERVER COMMUNICATE WITH YOUR APPLICATION
@@ -34,6 +44,7 @@ https://discord.com/developers/docs/getting-started#creating-an-app
 2 - After your discord bot is added to your discord server is time to spin up the bot server... there a some ways yyou can do that
 * By downloading the zip file which contains an executable a folder with the sounds and a file called .env where you will paste your bot token
   * windows/amd64
+OR
 If you have a programming background the easiest way would be
 * By running a docker container... if you have docker installed just copy the docker-compose.yaml file and the .env file (replace the token with your own) and run the app with docker-compose up
 * By running or compilling the go code by yourself
@@ -53,6 +64,7 @@ ps: I run the docker container in a free Oracle VPS, that way the bot is always 
 
 ## Technical Aspects
 It makes use of the dota GSI to receive direct post request with the game data to your bot server.
+You have a ippersistence file that will be used if you host the program on the web... that way he will only listen to one call at time, even if multiple game clients are sending request (first come first served)
 
 ### Windows WSL
 You wont receive any notifications if running on windows WSL... because the 127.0.0.1 isnt mapped correct
