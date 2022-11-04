@@ -8,7 +8,7 @@ This is a server for a Discord Bot that will listen to your dota 2 game events a
 
 This side project started with the goals to practice Golang while building something that I would actually use.
 
-Since it wasn't supposed to be open source or broaden distributed, you will find some bad architecture decisions and some weird comments scattered around :D
+Since it wasn't supposed to be open source or broaden distributed, you will find some bad architecture decisions and some weird comments scattered around.
 
 You can run it on your own machine or host it somewhere else.
 
@@ -48,7 +48,7 @@ REMEMBER TO SAVE THE TOKEN SOMEWHERE SAFE, IT IS USED AS A BRIDGE TO CONNECT YOU
 There are three ways to run the server:
 1 - Downloading the zip file (best if you are not familiar with programming at all) - windows/amd64 only
 * Download the zip file located in this repository
-![Download](dev_assets/downloadZop.png?raw=true "Download Zip")
+![Download](dev_assets/downloadZip.png?raw=true "Download Zip")
 * Extract it and paste your discord bot token on the .env file, you can open it with any text editor (and if you haven't done already, copy and paste the game state file)
 * Then you just run the belphegorv2.exe file and wait for it to load.
 
